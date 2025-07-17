@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
 
 # Fonte de dados: https://dados.antt.gov.br/dataset/acidentes-quilometro-rodovias/resource/6a66aba2-1a3c-414b-9ea0-f21b2a6e0396
 
@@ -15,7 +10,7 @@
 import pandas as pd
 import warnings
 import matplotlib.pyplot as plt
-import seaborn as sns
+#import seaborn as sns
 
 warnings.filterwarnings('ignore')
 
@@ -85,15 +80,13 @@ dados['Km'].mode()[0]
 acidentes_estacao = dados.groupby(['Estacao']).size()
 acidentes_semana = dados.groupby('Dia_da_semana').size().sort_values(ascending=False)
 acidentes_mes = dados.groupby(['Mes']).size().sort_values(ascending=False)
+acidentes_por_ano_mes = dados.groupby(['Ano', 'Mes']).size()
 acidentes_estacao_ano = dados.groupby(['Ano', 'Estacao']).size()
 acidentes_trecho = dados['Trecho'].value_counts()
 acidentes_pordia = dados['Dia_da_semana'].value_counts().loc[
     ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 ]
-
-
-# In[56]:
-
+media_acidentes_mes = int(dados.shape[0] / dados[['Ano', 'Mes']].drop_duplicates().shape[0])
 
 #dados['Estacao'].value_counts().sort_index().plot(kind='bar', color='mediumseagreen')
 acidentes_estacao_ano.plot(kind='bar', figsize=(10,6), color=['#87CEEB', '#98FB98', '#FFD700','#FF8C00'])
@@ -106,9 +99,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[57]:
-
-
 acidentes_porkm = dados['Km'].value_counts().nlargest(5)
 acidentes_porkm.plot(kind='bar', color='tomato')
 plt.title('Top5 Kms com mais registros de acidentes')
@@ -117,9 +107,6 @@ plt.ylabel('Quantidade de Acidentes')
 plt.xticks(rotation=0)
 plt.tight_layout()
 plt.show()
-
-
-# In[58]:
 
 
 plt.figure(figsize=(6,4))
@@ -131,9 +118,6 @@ plt.xlabel("Ano")
 plt.ylabel("Quantidade de Acidentes")
 plt.tight_layout()
 plt.show()
-
-
-# In[61]:
 
 
 plt.figure(figsize=(4, 4))
@@ -150,9 +134,6 @@ plt.tight_layout()
 plt.show()
 
 
-# In[64]:
-
-
 acidentes_trecho.plot(kind='barh', color ='steelblue', figsize=(6, 5))
 plt.title("Trechos com Maior Número de Acidentes")
 plt.xlabel("Quantidade de Acidentes")
@@ -161,11 +142,8 @@ plt.gca().invert_yaxis()  # Coloca o maior no topo
 plt.show()
 
 
-# In[67]:
-
-
 plt.figure(figsize=(7,5))
-plt.fill_between(acidentes_por_dia.index, acidentes_por_dia.values, color='crimson', alpha=0.6)
+plt.fill_between(acidentes_pordia.index, acidentes_pordia.values, color='crimson', alpha=0.6)
 plt.title("Acidentes por Dia da Semana")
 plt.xlabel("Dia da Semana")
 plt.ylabel("Quantidade de Acidentes")
@@ -173,22 +151,46 @@ plt.tight_layout()
 plt.show()
 
 
-# In[66]:
 
+# fig, ax = plt.subplots(figsize=(10,5))
 
-acidentes_por_mes = dados['Mes'].value_counts().sort_index()
+# ax.bar(acidentes_mes.index, acidentes_mes.values, color='steelblue', label='Acidentes por Mês')
+# ax.axhline(media_acidentes_mes, color='crimson', linestyle='--', linewidth=2, label=f'Média: {media_acidentes_mes}')
 
-acidentes_por_mes.plot(kind='bar', color='purple')
-plt.title('# Meses mais registros de acidentes')
-plt.xlabel('Mês')
-plt.ylabel('Quantidade de Acidentes')
-plt.xticks(rotation=0)
+# ax.set_title("Acidentes por Mês com Linha de Média", fontsize=14, fontweight='bold')
+# ax.set_xlabel("Mês")
+# ax.set_ylabel("Número de Acidentes")
+# ax.set_xticks(range(1, 13))
+# ax.set_xticklabels(['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+#                     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'])
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+
+acidentes_por_ano_mes
+anos = sorted(dados['Ano'].unique())
+fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(18, 5), sharey=True)
+for i, ano in enumerate(anos):
+    ax = axes[i]
+
+    acidentes_mes = acidentes_por_ano_mes.loc[ano]
+    media_acidentes_mes = int(acidentes_mes.mean())
+
+    ax.bar(acidentes_mes.index, acidentes_mes.values, color='steelblue', label='Acidentes por Mês')
+    ax.axhline(media_acidentes_mes, color='crimson', linestyle='--', linewidth=2, label=f'Média: {media_acidentes_mes}')
+
+    ax.set_title(f"Ano {ano}", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Mês")
+    if i == 0:
+        ax.set_ylabel("Número de Acidentes")
+
+    ax.set_xticks(range(1, 13))
+    ax.set_xticklabels(['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'])
+
+    ax.legend()
+
 plt.tight_layout()
 plt.show()
-
-
-# In[ ]:
-
-
 
 
