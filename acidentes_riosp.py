@@ -4,18 +4,12 @@
 #Acidentes por Km na rodovia federal RIOSP
 
 
-# In[1]:
-
-
 import pandas as pd
 import warnings
 import matplotlib.pyplot as plt
 #import seaborn as sns
 
 warnings.filterwarnings('ignore')
-
-
-# In[49]:
 
 
 dados = pd.read_csv('demostrativo_acidentes_riosp.csv', encoding = 'latin1')
@@ -39,8 +33,6 @@ dados['Mes'] = dados['Data'].dt.month
 dados['Dia_da_semana'] = dados['Data'].dt.day_name().astype(str) 
 dados['Trimestre'] = dados['Data'].dt.quarter.astype(str)
 
-
-# In[50]:
 
 
 #Função para criação da coluna "Estação"    
@@ -67,13 +59,7 @@ def get_estacao_hemisferio_sul(data):
         return None # Caso alguma data não se encaixe (improvável com datas válidas)
 
 
-# In[51]:
-
-
 dados['Estacao'] = dados['Data'].apply(get_estacao_hemisferio_sul)
-
-
-# In[63]:
 
 
 dados['Km'].mode()[0]
@@ -150,22 +136,6 @@ plt.ylabel("Quantidade de Acidentes")
 plt.tight_layout()
 plt.show()
 
-
-
-# fig, ax = plt.subplots(figsize=(10,5))
-
-# ax.bar(acidentes_mes.index, acidentes_mes.values, color='steelblue', label='Acidentes por Mês')
-# ax.axhline(media_acidentes_mes, color='crimson', linestyle='--', linewidth=2, label=f'Média: {media_acidentes_mes}')
-
-# ax.set_title("Acidentes por Mês com Linha de Média", fontsize=14, fontweight='bold')
-# ax.set_xlabel("Mês")
-# ax.set_ylabel("Número de Acidentes")
-# ax.set_xticks(range(1, 13))
-# ax.set_xticklabels(['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-#                     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'])
-# plt.legend()
-# plt.tight_layout()
-# plt.show()
 
 acidentes_por_ano_mes
 anos = sorted(dados['Ano'].unique())
